@@ -19,7 +19,7 @@ func installProfile(profile string) error {
 
 func installDevTools() error {
 	cmds := []string{
-		"sudo apt install hstr",
+		"sudo add-apt-repository ppa:ultradvorka/ppa && sudo apt-get update && sudo apt-get install hstr && hstr --show-configuration >> ~/.bashrc && . ~/.bashrc",
 		"sudo apt=get install jq",
 		// Add more commands as needed
 	}
