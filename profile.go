@@ -1,8 +1,9 @@
 package main
 
 import (
-    "os"
+    "fmt"
     "os/exec"
+    "strings"
 )
 
 func installProfile(profile string) error {
@@ -12,21 +13,23 @@ func installProfile(profile string) error {
     case "data":
         return installDataTools()
     default:
-        return nil
+        return fmt.Errorf("Unknown profile: %s", profile)
     }
 }
 
 func installDevTools() error {
     cmds := []string{
-        "sudo apt-get install git",
+        "sudo apt-get install -y vim",
+        "sudo apt-get install -y git",
+        // Add more commands as needed
     }
     return runCommands(cmds)
 }
 
 func installDataTools() error {
     cmds := []string{
-        "sudo apt-get install python3",
-        "sudo apt-get install jupyter",
+        "sudo apt-get install -y python3",
+        "sudo apt-get install -y jupyter",
         // Add more commands as needed
     }
     return runCommands(cmds)
@@ -36,11 +39,11 @@ func runCommands(cmds []string) error {
     for _, cmd := range cmds {
         parts := strings.Fields(cmd)
         head := parts[0]
-        parts = parts[1:len(parts)]
+        parts = parts[1:]
 
         out, err := exec.Command(head, parts...).Output()
         if err != nil {
-            return err
+            return fmt.Errorf("Error executing command '%s': %v", cmd, err)
         }
         fmt.Println(string(out))
     }
