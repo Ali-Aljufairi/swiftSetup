@@ -1,0 +1,45 @@
+name: Go
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Build
+      run: go build -v ./cmd/swiftSetup
+
+    - name: Test
+      run: go test -v ./...
+
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: latest
+
+    - name: Build for multiple platforms
+      run: |
+        GOOS=linux GOARCH=amd64 go build -o swiftSetup-linux-amd64 ./cmd/swiftSetup
+        GOOS=windows GOARCH=amd64 go build -o swiftSetup-windows-amd64.exe ./cmd/swiftSetup
+        GOOS=darwin GOARCH=amd64 go build -o swiftSetup-darwin-amd64 ./cmd/swiftSetup
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: binaries
+        path: |
+          swiftSetup-linux-amd64
+          swiftSetup-windows-amd64.exe
+          swiftSetup-darwin-amd64
